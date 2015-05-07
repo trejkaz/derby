@@ -1079,7 +1079,7 @@ nextModule:
 			if (key.startsWith(Property.MODULE_PREFIX)) {
 				tag = key.substring(Property.MODULE_PREFIX.length());
             } else if (key.startsWith(Property.SUB_SUB_PROTOCOL_PREFIX)) {
-                tag = key.substring(Property.MODULE_PREFIX.length());
+                tag = key.substring(Property.SUB_SUB_PROTOCOL_PREFIX.length());
             } else {
                 continue nextModule;
             }
