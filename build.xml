@@ -1943,12 +1943,16 @@
 
 
    <target name="getsvnversion">
+<!--
      <exec executable="svnversion"
            failifexecutionfails="no"
            output="${out.base}/changenumber.properties">
        <arg value="${basedir}"/>
        <arg value="-n"/>
      </exec>
+-->
+     <!-- It would show the version number of the contained app anyway, which is totally pointless.  Additionally, Cygwin gives warnings, which end up in the output. -->
+     <echo message="0" file="${out.base}/changenumber.properties"/>
    </target>
 
   <target name="cleanjars" depends="setsanityname">
