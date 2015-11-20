@@ -2043,6 +2043,7 @@
 
 
    <target name="getsvnversion" unless="changenumber">
+<!--
      <exec executable="svnversion"
            failifexecutionfails="no"
            output="${out.base}/changenumber.properties">
@@ -2062,6 +2063,9 @@
        </not>
      </condition>
      <echo level="info" message="Revision number set to ${changenumber}."/>
+-->
+     <!-- It would show the version number of the contained app anyway, which is totally pointless.  Additionally, Cygwin gives warnings, which end up in the output. -->
+     <echo message="0" file="${out.base}/changenumber.properties"/>
    </target>
 
   <target name="cleanjars" depends="setsanityname">

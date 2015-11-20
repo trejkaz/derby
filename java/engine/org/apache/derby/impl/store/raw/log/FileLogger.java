@@ -50,6 +50,8 @@ import org.apache.derby.iapi.store.raw.Undoable;
 
 import org.apache.derby.iapi.services.io.FormatIdOutputStream;
 
+import org.apache.derby.iapi.services.monitor.Monitor;
+
 import org.apache.derby.shared.common.sanity.SanityManager;
 
 import org.apache.derby.iapi.error.StandardException;
@@ -1286,10 +1288,17 @@ public class FileLogger implements Logger {
 					if ((ttabInstant == LogCounter.INVALID_LOG_INSTANT) && 
                         !record.isFirst())
                     {
+                        if ("true".equals(System.getProperty("org.apache.derby.skipBadRecordsDuringRecovery")))
+                        {
+                            Monitor.getStream().println("Skipping bad record during log redo");
+                            continue;
+                        }
+                        else
+                        {
 						throw StandardException.newException(
                             SQLState.LOG_UNEXPECTED_RECOVERY_PROBLEM,
                             MessageService.getTextMessage(MessageId.LOG_RECORD_NOT_FIRST,tranId));
-
+                    }
                     }
 
 					if (SanityManager.DEBUG)

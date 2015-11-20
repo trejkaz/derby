@@ -42,6 +42,8 @@ public class BaseDataFileFactoryJ4 extends BaseDataFileFactory {
      * objects capable of exploiting the NIO API available in Java 1.4+
      */
     protected Cacheable newRAFContainer(BaseDataFileFactory factory) {
-        return new RAFContainer4(factory);
+        // DN - work around ClosedChannelException issue in RAFContainer4 because Derby don't seem to care.
+        return new RAFContainer(factory);
+        //return new RAFContainer4(factory);
     }
 }

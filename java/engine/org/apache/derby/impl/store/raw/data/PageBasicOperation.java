@@ -45,7 +45,10 @@ import org.apache.derby.iapi.services.property.PropertyUtil;
 import java.io.ObjectOutput;
 import java.io.ObjectInput;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.derby.iapi.services.io.LimitObjectInput;
+import org.apache.derby.iapi.services.monitor.Monitor;
 
 /**
     A PageBasicOperation changed the content of a page, this is the root class of all
@@ -150,6 +153,34 @@ abstract class PageBasicOperation implements Loggable, RePreparable
 	public final boolean needsRedo(Transaction xact)
 		 throws StandardException
 	{
+        // Skip certain pages during recovery if we have corrupted pages as a
+        // way of trying to get a corrupted database into a useable state.
+        if (pageId != null)
+        {
+            String skipPagesProperty = System.getProperty("org.apache.derby.skipPagesDuringRecovery");
+            if (skipPagesProperty != null)
+            {
+                Set skipPages = new HashSet();
+                String[] skipPagesArray = skipPagesProperty.split(",");
+                for (int i = 0; i < skipPagesArray.length; i++)
+                {
+                    skipPages.add(Long.valueOf(skipPagesArray[i]));
+                }
+
+                if (skipPages.contains(new Long(pageId.getPageNumber())))
+                {
+                    Monitor.getStream().println("Skipping page " + pageId.getPageNumber() + " during log redo");
+                    return false;
+                }
+                else
+                {
+                    // Putting this here, as this is often useful when dealing with corruption issues.
+                    Monitor.getStream().println("Handling page " + pageId.getPageNumber() + " during log redo");
+                }
+            }
+        }
+        
+
 		if (findpage(xact) == null)	// committed dropped container
 			return false;
 
